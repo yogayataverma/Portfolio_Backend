@@ -16,15 +16,19 @@ const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: [
-    'https://portfolio-frontend-nu-one.vercel.app',
-    'https://portfolio-nine-nu-90.vercel.app',
-    process.env.FRONTEND_URL // Add this for flexibility
-  ],
-  credentials: true
+  origin: 'https://portfolio-frontend-nu-one.vercel.app', // React app's URL
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 }));
 
 app.use(express.json());
+
+// Add these headers to prevent HTML responses
+app.use((req, res, next) => {
+  res.header('Content-Type', 'application/json');
+  next();
+});
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI);
@@ -282,10 +286,10 @@ app.get('/api/projects/:postId/comments', async (req, res) => {
 // Add this line with your other routes
 app.use('/api/updates', updatesRouter);
 
-// Error handling middleware
+// Ensure error responses are also JSON
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong!' });
+  res.status(500).json({ error: err.message });
 });
 
 // Verify environment variables are loaded
