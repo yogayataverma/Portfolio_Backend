@@ -22,6 +22,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 }));
 
+require('dotenv').config();
+
 app.use(express.json());
 
 // Add these headers to prevent HTML responses
@@ -31,7 +33,19 @@ app.use((req, res, next) => {
 });
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('Successfully connected to MongoDB Atlas');
+    console.log('Connected to database:', mongoose.connection.db.databaseName);
+  })
+  .catch((error) => {
+    console.error('MongoDB connection error:', error.message);
+    console.log('Please check:');
+    console.log('1. Your MongoDB Atlas cluster is running');
+    console.log('2. The connection string is correct');
+    console.log('3. Your IP address is whitelisted in MongoDB Atlas');
+    process.exit(1);
+  });
 
 // Define Schemas and Models
 
