@@ -16,7 +16,7 @@ const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: 'https://yogayataverma.netlify.app', // React app's URL
+  origin: '*', // React app's URL
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
@@ -132,6 +132,12 @@ app.post('/api/projects', authMiddleware, async (req, res) => {
 });
 
 // Routes
+
+// Add the skills routes
+app.use('/api/skills', skillsRouter);
+
+// Add the chat routes
+app.use('/api/chat', chatRouter);
 
 // --- Project Routes ---
 app.get('/api/projects', async (req, res) => {
@@ -285,32 +291,6 @@ app.get('/api/projects/:postId/comments', async (req, res) => {
 
 // Add this line with your other routes
 app.use('/api/updates', updatesRouter);
-
-// Add these routes for posts
-app.get('/api/posts', async (req, res) => {
-  try {
-    const posts = await Project.find().sort({ timestamp: -1 });
-    res.json(posts);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching posts', error });
-  }
-});
-
-app.post('/api/posts', authMiddleware, async (req, res) => {
-  try {
-    const { title, content, imageUrl } = req.body;
-    const newPost = new Project({
-      title,
-      content,
-      imageUrl,
-      timestamp: new Date()
-    });
-    const savedPost = await newPost.save();
-    res.status(201).json(savedPost);
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating post', error });
-  }
-});
 
 // Ensure error responses are also JSON
 app.use((err, req, res, next) => {
