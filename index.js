@@ -157,6 +157,7 @@ app.use('/api/chat', chatRouter);
 app.get('/api/projects', async (req, res) => {
   try {
     const projects = await Project.find().sort({ timestamp: -1 });
+    console.log('Sending projects:', projects);
     res.json(projects);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching projects', error });
@@ -333,10 +334,10 @@ mongoose.connection.on('error', (err) => {
 });
 
 // Add this route handler
-app.get('/api/posts', async (req, res) => {
+app.get('/api/projects', async (req, res) => {
   try {
-    // If you have a database, fetch posts here
-    const posts = []; // Replace with your actual posts data
+    const posts = await Project.find().sort({ timestamp: -1 });
+    console.log('Sending projects:', posts);
     res.json(posts);
   } catch (error) {
     console.error('Error fetching posts:', error);
