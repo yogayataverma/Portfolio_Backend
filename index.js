@@ -16,11 +16,28 @@ const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: '*', // React app's URL
-  credentials: true,
+  origin: '*', // This allows all origins
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
+
+// Add specific CORS handling for the chat endpoint
+app.use('/api/chat', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin, X-Requested-With');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Handle OPTIONS method
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+  
+  next();
+});
 
 require('dotenv').config();
 
