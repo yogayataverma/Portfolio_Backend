@@ -286,6 +286,32 @@ app.get('/api/projects/:postId/comments', async (req, res) => {
 // Add this line with your other routes
 app.use('/api/updates', updatesRouter);
 
+// Add these routes for posts
+app.get('/api/posts', async (req, res) => {
+  try {
+    const posts = await Project.find().sort({ timestamp: -1 });
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching posts', error });
+  }
+});
+
+app.post('/api/posts', authMiddleware, async (req, res) => {
+  try {
+    const { title, content, imageUrl } = req.body;
+    const newPost = new Project({
+      title,
+      content,
+      imageUrl,
+      timestamp: new Date()
+    });
+    const savedPost = await newPost.save();
+    res.status(201).json(savedPost);
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating post', error });
+  }
+});
+
 // Ensure error responses are also JSON
 app.use((err, req, res, next) => {
   console.error(err.stack);
