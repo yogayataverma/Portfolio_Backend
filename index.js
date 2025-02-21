@@ -317,3 +317,15 @@ mongoose.connection.on('error', (err) => {
   console.error('MongoDB connection error:', err);
   process.exit(1);
 });
+
+// Add this route handler
+app.get('/api/posts', async (req, res) => {
+  try {
+    // If you have a database, fetch posts here
+    const posts = []; // Replace with your actual posts data
+    res.json(posts);
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
